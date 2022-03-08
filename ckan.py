@@ -114,9 +114,9 @@ class Utils:
 
 	@staticmethod
 	def is_json(object):
-  		try: json.loads(object)
-  		except ValueError: return False
-  		return True
+		try: json.loads(object)
+		except ValueError: return False
+		return True
 
 if __name__ == '__main__':
 
