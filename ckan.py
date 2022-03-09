@@ -18,9 +18,13 @@ CKAN api
 
 - top_tags(n)
 
+- get_resource(url)
+
+- get_data_from_repository(): return csv data from ckan website as list of dicts - [{'name': ..., 'csv': ...}, ...]
+
 """
 
-import requests, json
+import requests, json, time
 from pygments import highlight
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.lexers.web import JsonLexer
@@ -103,6 +107,11 @@ class CKAN:
 	def top_tags(self, n = 10):
 		return self.get(f"/api/action/package_search?facet.field=[%22tags%22]&facet.limit={n}&rows=0")
 
+	def get_resource(self, url):
+		r = requests.get(url, stream = True, timeout = 5, allow_redirects=True)
+		r.raw.decode_content = True
+		return r
+
 
 class Utils:
 	
@@ -114,26 +123,43 @@ class Utils:
 
 	@staticmethod
 	def is_json(object):
-		try: json.loads(object)
-		except ValueError: return False
-		return True
+  		try: json.loads(object)
+  		except ValueError: return False
+  		return True
+
+def get_data_from_repository():
+	ckan = CKAN()
+	datasets = ckan.list_datasets()
+
+	csv_list = []
+	datasets_used = []
+	base_index = 1000
+	limit_index = base_index + 50
+	for i in range(base_index, limit_index):
+		info = ckan.info_dataset_resume(datasets[i])
+		for rsrc in info["resources"]:
+			if rsrc[0] == "CSV":
+				csv = ckan.get_resource(rsrc[1])
+				if csv.status_code == 200:
+					if info["name"] not in datasets_used:
+						entry = {'name': info["name"], 'csv': csv.text}
+						#print(entry)
+						csv_list.append(entry)
+						datasets_used.append(info["name"])
+		#Utils.pprint(info)
+	return csv_list
 
 if __name__ == '__main__':
 
 	Log.Configure()
 	Log.Info("Application started")
 
-	ckan = CKAN()
-
 	#Utils.pprint(ckan.top_tags())
-	
-
-	datasets = ckan.list_datasets()
-	#datasets = ckan.search_dataset("corrupção")
+	#datasets = ckan.search_dataset("educação")
 	#datasets = ckan.list_datasets_with_tag("orçamento")
 	
-	#for i in range(0, len(datasets)):
-	for i in range(0, 1):
-		#info = ckan.info_dataset_resume(datasets[i])
-		info = ckan.info_dataset(datasets[i])
-		Utils.pprint(info)
+	start_time = time.time()
+	all_data = get_data_from_repository()
+	print('size of csv list: ', len(all_data))
+	print("--- %s seconds ---" % (time.time() - start_time))
+	
