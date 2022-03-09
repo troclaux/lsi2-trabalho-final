@@ -24,3 +24,6 @@ def getRelationshipPercentage(dataset1, dataset2):
 	columns1 = list(dataset1)
 	columns2 = list(dataset2)
 	return countIdenticalColumns(dataset1, dataset2) / min(len(columns1), len(columns2))
+
+print(countIdenticalColumns(dataset1, dataset2))
+print(getRelationshipPercentage(dataset1, dataset2))
