@@ -11,17 +11,16 @@ dataset2 = pd.read_csv("dataset2.csv", delimiter=";")
 def countIdenticalColumns(dataset1, dataset2):
 	#definir o número de colunas nos 2 datasets
 	#comparar as colunas
-
 	identicalColumns = 0
 	columns1 = list(dataset1)
 	columns2 = list(dataset2)
-	numberOfColumnsDataset1 = len(columns1)
-	numberOfColumnsDataset2 = len(columns2)
 	for element1 in columns1:
 		for element2 in columns2:
 			if element1 == element2:
 				identicalColumns = identicalColumns + 1
-	
-	return identicalColumns / min(numberOfColumnsDataset1, numberOfColumnsDataset2)
+	return identicalColumns
 
-print(countIdenticalColumns(dataset1, dataset2))
+def getRelationshipPercentage(dataset1, dataset2):
+	columns1 = list(dataset1)
+	columns2 = list(dataset2)
+	return countIdenticalColumns(dataset1, dataset2) / min(len(columns1), len(columns2))
