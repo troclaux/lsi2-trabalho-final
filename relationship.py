@@ -16,7 +16,7 @@ def countIdenticalColumns(dataset1, dataset2):
 	#definir o número de colunas nos 2 datasets
 	#comparar as colunas
 	identicalColumns = 0
-	print(dataset1)
+	#print(dataset1)
 	columns1 = list(dataset1)
 	columns2 = list(dataset2)
 	for element1 in columns1:
@@ -29,7 +29,9 @@ def countIdenticalColumns(dataset1, dataset2):
 def getRelationshipPercentage(dataset1, dataset2):
 	columns1 = list(dataset1)
 	columns2 = list(dataset2)
-	return countIdenticalColumns(dataset1, dataset2) / min(len(columns1), len(columns2))
+	razao = countIdenticalColumns(dataset1, dataset2) / min(len(columns1), len(columns2))
+	arredondamento = round(razao, 2)
+	return arredondamento
 
 #print(countIdenticalColumns(dataset1, dataset2))
 #print(getRelationshipPercentage(dataset1, dataset2))
@@ -51,7 +53,7 @@ def createGraph(datasets):
 	#TODO: nomear os nos com os nomes dos datasets
 
 	for dataset in datasets:
-		G.add_node(dataset["name"])
+		G.add_node(dataset["name"], pos = (i,i))
 		i = i+1
 
 	#for node in G:
@@ -66,7 +68,7 @@ def createGraph(datasets):
 		for neighbor in datasets:
 			if node == neighbor:
 				continue
-			weight = countIdenticalColumns(node["csv"], neighbor["csv"])
+			weight = getRelationshipPercentage(node["csv"], neighbor["csv"])
 			if weight > 0:
 				G.add_edge(node["name"], neighbor["name"], weight=weight)
 
@@ -74,7 +76,11 @@ def createGraph(datasets):
 
 
 G = createGraph(datasetQueryResults)
-nx.draw(G)
+pos=nx.get_node_attributes(G,'pos')
+print(pos)
+nx.draw(G, pos)
+labels = nx.get_edge_attributes(G,'weight')
+nx.draw_networkx_edge_labels(G,pos,edge_labels=labels)
 plt.show()
 
 print(G.nodes)
