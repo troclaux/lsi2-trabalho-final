@@ -8,6 +8,12 @@ import networkx as nx
 #read csv from local directory with pandas
 dataset1 = pd.read_csv("dataset1.csv", delimiter=";")
 dataset2 = pd.read_csv("dataset2.csv", delimiter=";")
+dataset3 = pd.read_csv("dataset3.csv", delimiter=";")
+
+lista = [dataset1, dataset2, dataset3]
+
+datasetQueryResults = [{"name": "dataset1", "csv": dataset1}, {
+	"name": "dataset2", "csv": dataset2}, {"name": "dataset3", "csv": dataset3}]
 
 #function that counts the number of identical columns in two datasets
 
@@ -37,10 +43,7 @@ def getRelationshipPercentage(dataset1, dataset2):
 #print(getRelationshipPercentage(dataset1, dataset2))
 
 
-lista = [dataset1, dataset2]
 
-datasetQueryResults = [{"name": "dataset1", "csv": dataset1}, {
-	"name": "dataset2", "csv": dataset2}]
 #print(datasetQueryResults)
 #create graph
 
@@ -53,7 +56,7 @@ def createGraph(datasets):
 	#TODO: nomear os nos com os nomes dos datasets
 
 	for dataset in datasets:
-		G.add_node(dataset["name"], pos = (i,i))
+		G.add_node(dataset["name"]) #, pos = (i,i)
 		i = i+1
 
 	#for node in G:
@@ -74,13 +77,16 @@ def createGraph(datasets):
 
 	return G
 
-
+#declaracao do grafo
 G = createGraph(datasetQueryResults)
-pos=nx.get_node_attributes(G,'pos')
-print(pos)
+#define posicao dos nos em um grafo circular
+pos=nx.circular_layout(G, scale=1, center=None, dim=2)
+#constroi conexoes entre os nos
 nx.draw(G, pos)
+#atribui pesos nas arestas
 labels = nx.get_edge_attributes(G,'weight')
 nx.draw_networkx_edge_labels(G,pos,edge_labels=labels)
+#mostra o grafo na janela
 plt.show()
 
 print(G.nodes)
