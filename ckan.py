@@ -123,9 +123,9 @@ class Utils:
 
 	@staticmethod
 	def is_json(object):
-  		try: json.loads(object)
-  		except ValueError: return False
-  		return True
+		try: json.loads(object)
+		except ValueError: return False
+		return True
 
 def get_data_from_repository():
 	ckan = CKAN()
