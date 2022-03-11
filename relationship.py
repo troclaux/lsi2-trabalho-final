@@ -9,11 +9,13 @@ import networkx as nx
 dataset1 = pd.read_csv("dataset1.csv", delimiter=";")
 dataset2 = pd.read_csv("dataset2.csv", delimiter=";")
 dataset3 = pd.read_csv("dataset3.csv", delimiter=";")
+dataset4 = pd.read_csv("dataset4.csv", delimiter=";")
+dataset5 = pd.read_csv("dataset5.csv", delimiter=";")
 
-lista = [dataset1, dataset2, dataset3]
+lista = [dataset1, dataset2, dataset3, dataset4, dataset5]
 
 datasetQueryResults = [{"name": "dataset1", "csv": dataset1}, {
-	"name": "dataset2", "csv": dataset2}, {"name": "dataset3", "csv": dataset3}]
+	"name": "dataset2", "csv": dataset2}, {"name": "dataset3", "csv": dataset3}, {"name": "dataset4", "csv": dataset4}, {"name": "dataset5", "csv": dataset5}]
 
 #function that counts the number of identical columns in two datasets
 
