@@ -4,15 +4,26 @@ import pandas as pd
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import networkx as nx
+from io import StringIO
 
 #read csv from local directory with pandas
-dataset1 = pd.read_csv("dataset1.csv", delimiter=";")
-dataset2 = pd.read_csv("dataset2.csv", delimiter=";")
 
-lista = [dataset1, dataset2]
+datasetQueryResults = get_data_from_repository()
+for item in datasetQueryResults:
+	#try:
+	item["csv"] = item["csv"].replace("\r", "")
+	item["csv"] = StringIO(item["csv"])
+	item["csv"] = pd.read_csv(item["csv"], delimiter=";")
+	#print("dataquery")
+	#print(item["csv"])
+	#except OSError: datasetQueryResults.remove(datasetQueryResults[item])
+	#except ValueError: datasetQueryResults.remove(datasetQueryResults[item])
+	print(type(item["csv"]))
+	print(item["csv"])
+		
 
-datasetQueryResults = [{"name": "dataset1", "csv": dataset1}, {
-	"name": "dataset2", "csv": dataset2}]
+
+#datas♣♣etQueryResults =[{"name": "dataset1", "csv": dataset1}, {"name": "dataset2", "csv": dataset2}, {"name":"dataset3", "csv": dataset3}]
 
 #function that counts the number of identical columns in two datasets
 
@@ -24,6 +35,9 @@ def countIdenticalColumns(dataset1, dataset2):
 	#print(dataset1)
 	columns1 = list(dataset1)
 	columns2 = list(dataset2)
+	#print("spahgtti")
+	#print(columns1)
+	#print(columns2)
 	for element1 in columns1:
 		for element2 in columns2:
 			if element1 == element2:
@@ -35,6 +49,7 @@ def getRelationshipPercentage(dataset1, dataset2):
 	columns1 = list(dataset1)
 	columns2 = list(dataset2)
 	razao = countIdenticalColumns(dataset1, dataset2) / min(len(columns1), len(columns2))
+	#print("tamanhos: "+ len(columns1)+ "," + len(columns2))
 	arredondamento = round(razao, 2)
 	return arredondamento
 
@@ -70,6 +85,9 @@ def createGraph(datasets):
 		for neighbor in datasets:
 			if node == neighbor:
 				continue
+			#print("node e vizinho")
+			#print(node["csv"])
+			#print(neighbor["csv"])
 			weight = getRelationshipPercentage(node["csv"], neighbor["csv"])
 			if weight > 0:
 				G.add_edge(node["name"], neighbor["name"], weight=weight)
@@ -79,7 +97,7 @@ def createGraph(datasets):
 #declaracao do grafo
 G = createGraph(datasetQueryResults)
 #define posicao dos nos em um grafo circular
-pos=nx.circular_layout(G, scale=1, center=None, dim=2)
+pos=nx.spiral_layout(G, scale=1, center=None, dim=2)
 #constroi conexoes entre os nos
 nx.draw(G, pos)
 #atribui pesos nas arestas

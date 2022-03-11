@@ -108,9 +108,12 @@ class CKAN:
 		return self.get(f"/api/action/package_search?facet.field=[%22tags%22]&facet.limit={n}&rows=0")
 
 	def get_resource(self, url):
-		r = requests.get(url, stream = True, timeout = 5, allow_redirects=True)
-		r.raw.decode_content = True
-		return r
+		try:
+			r = requests.get(url, stream = True, timeout = 5, allow_redirects=True)
+			r.raw.decode_content = True
+			r.encoding = 'utf-8'
+			return r
+		except TimeoutError: None
 
 
 class Utils:
@@ -134,7 +137,7 @@ def get_data_from_repository():
 	csv_list = []
 	datasets_used = []
 	base_index = 1000
-	limit_index = base_index + 50
+	limit_index = base_index + 15
 	for i in range(base_index, limit_index):
 		info = ckan.info_dataset_resume(datasets[i])
 		for rsrc in info["resources"]:
@@ -142,7 +145,7 @@ def get_data_from_repository():
 				csv = ckan.get_resource(rsrc[1])
 				if csv.status_code == 200:
 					if info["name"] not in datasets_used:
-						entry = {'name': info["name"], 'csv': csv.text}
+						entry = {'name': info["name"], 'csv': csv.text.strip()}
 						#print(entry)
 						csv_list.append(entry)
 						datasets_used.append(info["name"])
