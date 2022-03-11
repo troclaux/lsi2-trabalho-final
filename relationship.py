@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from fileinput import filename
 from ckan import *
 import pandas as pd
@@ -5,21 +6,25 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import networkx as nx
 from io import StringIO
+import ssl
 
 #read csv from local directory with pandas
 
 datasetQueryResults = get_data_from_repository()
 for item in datasetQueryResults:
-	#try:
-	item["csv"] = item["csv"].replace("\r", "")
-	item["csv"] = StringIO(item["csv"])
-	item["csv"] = pd.read_csv(item["csv"], delimiter=";")
+	try:
+		item["csv"] = item["csv"].replace("\r", "")
+		#print(item["csv"])
+		item["csv"] = StringIO(item["csv"])
+		item["csv"] = pd.read_csv(item["csv"], delimiter=";")
 	#print("dataquery")
 	#print(item["csv"])
-	#except OSError: datasetQueryResults.remove(datasetQueryResults[item])
-	#except ValueError: datasetQueryResults.remove(datasetQueryResults[item])
-	print(type(item["csv"]))
-	print(item["csv"])
+	#except OSError: datasetQueryResults.remove(item)
+	except ValueError: datasetQueryResults.remove(item)
+	except pd.errors.ParserError: datasetQueryResults.remove(item)
+	except TypeError: datasetQueryResults.remove(item)
+	#print(type(item["csv"]))
+	#print(item["csv"])
 		
 
 
@@ -106,8 +111,8 @@ nx.draw_networkx_edge_labels(G,pos,edge_labels=labels)
 #mostra o grafo na janela
 plt.show()
 
-print(G.nodes)
-print(G.edges)
+#print(G.nodes)
+#print(G.edges)
 
-print(G.number_of_nodes())
-print(G.number_of_edges())
+#print(G.number_of_nodes())
+#print(G.number_of_edges())

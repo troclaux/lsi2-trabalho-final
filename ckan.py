@@ -29,6 +29,7 @@ from pygments import highlight
 from pygments.formatters.terminal import TerminalFormatter
 from pygments.lexers.web import JsonLexer
 from log import *
+import ssl
 
 class CKAN:
 
@@ -63,7 +64,9 @@ class CKAN:
 		info, dict = self.info_dataset(id), {}
 		if(info["status"] != 200): return {}
 		dict["name"] = info["data"]["result"]["name"]
-		dict["author"] = info["data"]["result"]["author"]
+		try:
+			dict["author"] = info["data"]["result"]["author"]
+		except KeyError: None
 		dict["modified"] = info["data"]["result"]["metadata_modified"]
 		dict["private"] = info["data"]["result"]["private"]
 		dict["state"] = info["data"]["result"]["state"]
@@ -114,6 +117,10 @@ class CKAN:
 			r.encoding = 'utf-8'
 			return r
 		except TimeoutError: None
+		except requests.exceptions.ReadTimeout: None
+		except ssl.SSLCertVerificationError: None
+		except requests.exceptions.SSLError: None
+		except urllib3.exceptions.MaxRetryError: None
 
 
 class Utils:
@@ -136,14 +143,14 @@ def get_data_from_repository():
 
 	csv_list = []
 	datasets_used = []
-	base_index = 1000
-	limit_index = base_index + 15
+	base_index = 3500
+	limit_index = base_index + 50
 	for i in range(base_index, limit_index):
 		info = ckan.info_dataset_resume(datasets[i])
 		for rsrc in info["resources"]:
 			if rsrc[0] == "CSV":
 				csv = ckan.get_resource(rsrc[1])
-				if csv.status_code == 200:
+				if csv is not None and csv.status_code == 200:
 					if info["name"] not in datasets_used:
 						entry = {'name': info["name"], 'csv': csv.text.strip()}
 						#print(entry)
@@ -159,7 +166,7 @@ if __name__ == '__main__':
 
 	#Utils.pprint(ckan.top_tags())
 	#datasets = ckan.search_dataset("educação")
-	#datasets = ckan.list_datasets_with_tag("orçamento")
+	datasets = ckan.list_datasets_with_tag("educação")
 	
 	start_time = time.time()
 	all_data = get_data_from_repository()
