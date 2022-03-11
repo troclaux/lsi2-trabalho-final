@@ -102,7 +102,7 @@ def createGraph(datasets):
 #declaracao do grafo
 G = createGraph(datasetQueryResults)
 #define posicao dos nos em um grafo circular
-pos=nx.spiral_layout(G, scale=1, center=None, dim=2)
+pos = nx.circular_layout(G, scale=1, center=None, dim=2)
 #constroi conexoes entre os nos
 nx.draw(G, pos)
 #atribui pesos nas arestas

@@ -143,8 +143,8 @@ def get_data_from_repository():
 
 	csv_list = []
 	datasets_used = []
-	base_index = 3500
-	limit_index = base_index + 50
+	base_index = 2200
+	limit_index = base_index + 10
 	for i in range(base_index, limit_index):
 		info = ckan.info_dataset_resume(datasets[i])
 		for rsrc in info["resources"]:
@@ -166,7 +166,7 @@ if __name__ == '__main__':
 
 	#Utils.pprint(ckan.top_tags())
 	#datasets = ckan.search_dataset("educação")
-	datasets = ckan.list_datasets_with_tag("educação")
+	#datasets = ckan.list_datasets_with_tag("educação")
 	
 	start_time = time.time()
 	all_data = get_data_from_repository()
